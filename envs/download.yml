@@ -1,0 +1,8 @@
+name: download_env
+channels:
+- conda-forge
+- bioconda
+
+dependencies:
+- wget
+- sra-tools

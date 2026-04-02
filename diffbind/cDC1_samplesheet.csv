@@ -1,0 +1,5 @@
+SampleID,CellType,Factor,Condition,Replicate,bamReads,Peaks,PeakCaller
+cDC1_WT_1,cDC1,ATAC,WT,1,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/samtools_mito/cDC1_WT_1_nomt_sorted.bam,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/cDC1_WT_1_filteredpeaks.bed,narrowPeak
+cDC1_WT_2,cDC1,ATAC,WT,2,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/samtools_mito/cDC1_WT_2_nomt_sorted.bam,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/cDC1_WT_2_filteredpeaks.bed,narrowPeak
+cDC1_KO_1,cDC1,ATAC,KO,1,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/samtools_mito/cDC1_KO_1_nomt_sorted.bam,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/cDC1_KO_1_filteredpeaks.bed,narrowPeak
+cDC1_KO_2,cDC1,ATAC,KO,2,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/samtools_mito/cDC1_KO_2_nomt_sorted.bam,/projectnb/bf528/students/nobma/projects/final-project-template-taraobma/results/cDC1_KO_2_filteredpeaks.bed,narrowPeak

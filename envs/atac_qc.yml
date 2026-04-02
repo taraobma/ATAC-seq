@@ -1,0 +1,22 @@
+name: atac_qc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  # Workflow
+  - nextflow
+
+  # BAM / peak processing
+  - samtools=1.17
+  - bedtools=2.30
+  - bc=1.07.1
+
+  # ATAC-seq QC & visualization
+  - deeptools=3.5.1
+  - matplotlib=3.7
+  - numpy
+  - pandas
+
+  # Optional utilities
+  - gzip
