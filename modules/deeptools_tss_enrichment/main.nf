@@ -8,6 +8,7 @@ process TSS_ENRICHMENT {
     input:
     tuple val(sample), path(bam), path(bai)
     path  tss_bed
+    val window
 
     output:
     tuple val(sample), path("${sample}_tss_enrichment.png"), emit: plot
@@ -17,7 +18,7 @@ process TSS_ENRICHMENT {
     """
     computeMatrix reference-point \
         --referencePoint TSS \
-        -b 2000 -a 2000 \
+        -b ${window} -a ${window} \
         -S ${bam} \
         -R ${tss_bed} \
         --skipZeros \
@@ -32,3 +33,8 @@ process TSS_ENRICHMENT {
         -p ${task.cpus}
     """
 }
+
+
+// fraction of all fragments overlap any region in mm10_tss.bed (percentage of reads in TSS) - 1bp sites
+
+// use a bed of TSS windows (+- 1 kb around TSS) 

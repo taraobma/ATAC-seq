@@ -1,6 +1,5 @@
 #!/usr/bin/env nextflow
 
-
 process FRIP {
     label 'process_medium'
     container 'quay.io/biocontainers/samtools:1.18--h50ea8bc_1'
@@ -12,13 +11,15 @@ process FRIP {
     output:
     path "${sample}_frip.txt", emit: frip
 
-
     script:
     """
     total=\$(samtools view -c ${bam})
     in_peaks=\$(samtools view -c -L ${peaks} ${bam})
-    echo -e "${sample}\t\${in_peaks}\t\${total}" > ${sample}_frip.txt
-    awk '{printf "%s\\tFRiP: %.4f\\n", \$1, \$2/\$3}' ${sample}_frip.txt
+
+    # sample, in_peaks, total, FRiP
+    awk -v s=${sample} -v i=\$in_peaks -v t=\$total 'BEGIN {
+        printf "%s\\t%s\\t%s\\t%.4f\\n", s, i, t, i/t
+    }' > ${sample}_frip.txt
     """
 }
 

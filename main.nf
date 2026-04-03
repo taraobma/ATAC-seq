@@ -23,7 +23,7 @@ include {PLOTHEATMAP} from './modules/deeptools_plotheatmap'
 include {FRAGMENT_SIZE} from './modules/deeptools_fragment_size'
 include {TSS_ENRICHMENT} from './modules/deeptools_tss_enrichment'
 include {FRIP} from './modules/samtools_frip'
-
+include {MERGE_FRIP} from './modules/merge_frip'
 
 workflow {
 
@@ -178,8 +178,8 @@ workflow {
     // plot heatmap of signal around TSS
     PLOTHEATMAP(matrix_ch)
 
-    // TSS enrichment and fragment size
-    TSS_ENRICHMENT(SAMTOOLS_MITO.out, params.ucsc_genes)
+    // TSS enrichment - % of reads in ±1 kb windows around TSS
+    TSS_ENRICHMENT(SAMTOOLS_MITO.out, params.tss_1kb, params.window)
 
     // fragment size distribution
     FRAGMENT_SIZE(SAMTOOLS_MITO.out)
@@ -193,6 +193,9 @@ workflow {
 
     // calculate FRiP scores
     FRIP(frip_input_ch)
+
+    // merge FRiP scores into a single table (tsv)
+    MERGE_FRIP(FRIP.out)
 }
 
 
