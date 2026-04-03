@@ -20,10 +20,12 @@ include {ANNOTATE} from './modules/homer_annotatepeaks'
 include {FIND_MOTIFS_GENOME} from './modules/homer_findmotifsgenome'
 include {COMPUTEMATRIX} from './modules/deeptools_computematrix'
 include {PLOTHEATMAP} from './modules/deeptools_plotheatmap'
-include {FRAGMENT_SIZE} from './modules/deeptools_fragment_size'
+// include {FRAGMENT_SIZE} from './modules/deeptools_fragment_size'
 include {TSS_ENRICHMENT} from './modules/deeptools_tss_enrichment'
 include {FRIP} from './modules/samtools_frip'
 include {MERGE_FRIP} from './modules/merge_frip'
+include {MITO_FRACTION} from './modules/mito_fraction'
+include {MERGE_MITO_FRACTION} from './modules/merge_mito'
 
 workflow {
 
@@ -181,8 +183,8 @@ workflow {
     // TSS enrichment - % of reads in ±1 kb windows around TSS
     TSS_ENRICHMENT(SAMTOOLS_MITO.out, params.tss_1kb, params.window)
 
-    // fragment size distribution
-    FRAGMENT_SIZE(SAMTOOLS_MITO.out)
+    // fragment size distribution - PE reads only
+    // FRAGMENT_SIZE(SAMTOOLS_MITO.out)
 
     // FRiP score input channel - need to join BAM files with their corresponding filtered peak files
     frip_input_ch = SAMTOOLS_MITO.out
@@ -195,7 +197,14 @@ workflow {
     FRIP(frip_input_ch)
 
     // merge FRiP scores into a single table (tsv)
-    MERGE_FRIP(FRIP.out)
+    MERGE_FRIP(FRIP.out.collect())
+
+    // mitochondrial read fraction QC - % of reads mapping to chrM
+    MITO_FRACTION(SAMTOOLS_VIEW_SORT.out.bam)
+
+    // merge mitochondrial read fraction into a single table (tsv)
+    MERGE_MITO_FRACTION( Channel.value(true) )
+
 }
 
 

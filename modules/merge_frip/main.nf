@@ -1,6 +1,9 @@
 #!/usr/bin/env nextflow
 
 process MERGE_FRIP {
+    label 'process_low'
+    publishDir params.outdir, mode: 'copy'
+
     input:
     path(frip_files)
 

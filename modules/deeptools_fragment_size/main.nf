@@ -21,3 +21,6 @@ process FRAGMENT_SIZE {
         -p ${task.cpus}
     """
 }
+
+// used for PE reads 
+// not suitable for SE reads - would need to use bamFingerprint instead and adjust parameters accordingly

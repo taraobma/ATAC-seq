@@ -6,8 +6,9 @@ process SAMTOOLS_VIEW_SORT {
     tuple val(sample_id), path(sam)
 
     output:
-    tuple val(sample_id), path("${sample_id}.bam"), emit: bam
+    tuple val(sample_id), path("${sample_id}.bam"), path("${sample_id}.bam.bai"), emit: bam
 
+    script:
     """
     samtools view -bS -q 30 ${sam} | samtools sort -@ ${task.cpus} -o ${sample_id}.bam
     samtools index ${sample_id}.bam
