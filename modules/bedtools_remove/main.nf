@@ -3,7 +3,7 @@
 process BEDTOOLS_REMOVE {
 
     label 'process_high'
-    container 'ghcr.io/bf528/bedtools:latest'
+    container 'quay.io/biocontainers/bedtools:2.31.1--h13024bc_3'
     publishDir params.outdir, mode: 'copy'
 
     input:

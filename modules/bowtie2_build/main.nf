@@ -1,7 +1,7 @@
 process BOWTIE2_BUILD {
     
     label 'process_high'
-    container 'ghcr.io/bf528/bowtie2:latest'
+    container 'quay.io/biocontainers/bowtie2:2.5.1--py39h3321a2d_0'
     publishDir params.outdir, mode: 'copy'
 
     input:

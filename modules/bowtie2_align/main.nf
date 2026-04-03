@@ -1,31 +1,25 @@
 #!/usr/bin/env nextflow
 
 process BOWTIE2_ALIGN {
-
     label 'process_high'
-    container 'ghcr.io/bf528/bowtie2:latest'
-    publishDir params.outdir, mode: 'copy'
-    
+    tag "$sample_id"
+    container 'quay.io/biocontainers/bowtie2:2.5.4--he20e202_2'
+
     input:
-    tuple val(sample), path(reads)
-    path bowtie2_index
-    val name
+    tuple val(sample_id), path(reads)
+    path(index_dir)
+    val(index_name)
 
     output:
-    tuple val(sample), path("${sample}.bam"), emit: bam
+    tuple val(sample_id), path("${sample_id}.sam"), emit: sam
 
-    script:
     """
-    bowtie2 \\
-        -x $bowtie2_index/${name} \\
-        -U $reads \\
-        -p $task.cpus \\
-        --very-sensitive | samtools view -bS -q 30 - > ${sample}.bam
-    """
-
-    stub:
-    """
-    touch ${sample}.bam
+    bowtie2 \
+        -x ${index_dir}/${index_name} \
+        -U ${reads} \
+        -p ${task.cpus} \
+        --very-sensitive \
+        -S ${sample_id}.sam
     """
 }
 

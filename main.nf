@@ -4,7 +4,7 @@ include {FASTQC} from './modules/fastqc'
 include {TRIM} from './modules/trimmomatic'
 include {BOWTIE2_BUILD} from './modules/bowtie2_build'
 include {BOWTIE2_ALIGN} from './modules/bowtie2_align'
-include {SAMTOOLS_SORT} from './modules/samtools_sort'
+include {SAMTOOLS_VIEW_SORT} from './modules/samtools_view'
 include {SAMTOOLS_IDX} from './modules/samtools_idx'
 include {SAMTOOLS_FLAGSTAT} from './modules/samtools_flagstat'
 include {SAMTOOLS_MITO} from './modules/samtools_mito'
@@ -48,14 +48,15 @@ workflow {
     //align the trimmed reads to the reference genome
     BOWTIE2_ALIGN(
                 TRIM.out.trimmed, 
-                BOWTIE2_BUILD.out
+                BOWTIE2_BUILD.out.index,
+                BOWTIE2_BUILD.out.name
                 )
 
     // sort the aligned reads and convert to BAM format
-    SAMTOOLS_SORT(BOWTIE2_ALIGN.out)
+    SAMTOOLS_VIEW_SORT(BOWTIE2_ALIGN.out)
 
     // index the sorted BAM files
-    SAMTOOLS_IDX(SAMTOOLS_SORT.out)
+    SAMTOOLS_IDX(SAMTOOLS_VIEW_SORT.out)
 
     // filter for mitochondrial reads
     SAMTOOLS_MITO(SAMTOOLS_IDX.out)
@@ -108,12 +109,6 @@ workflow {
             def sorted = [reps, beds].transpose().sort { a, b -> a[0] <=> b[0] }
             tuple(group, sorted[0][1], sorted[1][1])
         }
-        // only keeps two peak files per group for intersecting replicates
-
-    // intersect_input_ch = peaks_with_meta_ch
-    //     .groupTuple(by: 0)
-    //     .map { group, reps, beds ->
-    //         tuple(group, beds)
 
     // intersect peaks between replicates for each group
     intersect_ch = BEDTOOLS_INTERSECT(intersect_input_ch)
@@ -174,23 +169,29 @@ workflow {
     bw_with_type_ch = BAMCOVERAGE.out
         .map { sample, bw -> tuple(sample.tokenize('_')[0], bw) }
 
+    // group BigWig files by cell type for computeMatrix
     group_bw_ch = bw_with_type_ch.groupTuple(by: 0)
 
+    // compute matrix around TSS for each cell type using the UCSC genes as reference
     matrix_ch = COMPUTEMATRIX(group_bw_ch, params.ucsc_genes, params.window)
     
+    // plot heatmap of signal around TSS
     PLOTHEATMAP(matrix_ch)
 
     // TSS enrichment and fragment size
     TSS_ENRICHMENT(SAMTOOLS_MITO.out, params.ucsc_genes)
+
+    // fragment size distribution
     FRAGMENT_SIZE(SAMTOOLS_MITO.out)
 
-    // FRiP score
+    // FRiP score input channel - need to join BAM files with their corresponding filtered peak files
     frip_input_ch = SAMTOOLS_MITO.out
         .join(meta_ch.map { name, group, rep -> tuple(name, group) })
         .map { name, bam, bai, group -> tuple(group, name, bam, bai) }
         .combine(filtered_ch, by: 0)
         .map { group, name, bam, bai, bed -> tuple(name, bam, bai, bed) }
 
+    // calculate FRiP scores
     FRIP(frip_input_ch)
 }
 

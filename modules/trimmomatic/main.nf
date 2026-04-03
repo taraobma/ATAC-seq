@@ -3,7 +3,7 @@
 process TRIM {
 
     label 'process_low'
-    container 'ghcr.io/bf528/trimmomatic:latest'
+    container 'quay.io/biocontainers/trimmomatic:0.39--1'
     publishDir params.outdir, mode: 'copy'
 
     input:

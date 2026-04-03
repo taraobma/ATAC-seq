@@ -3,7 +3,7 @@
 
 process FRIP {
     label 'process_medium'
-    container 'ghcr.io/bf528/samtools:latest'
+    container 'quay.io/biocontainers/samtools:1.18--h50ea8bc_1'
     publishDir params.outdir, mode: 'copy'
 
     input:

@@ -3,7 +3,7 @@
 process FASTQC {
 
     label 'process_low'
-    container 'ghcr.io/bf528/fastqc:latest'
+    container 'quay.io/biocontainers/fastqc:0.11.9--0'
 
     publishDir params.outdir, mode: "copy"
 

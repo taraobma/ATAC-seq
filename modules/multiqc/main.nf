@@ -3,7 +3,7 @@
 process MULTIQC {
 
     label 'process_low'
-    container 'ghcr.io/bf528/multiqc:latest'
+    container 'quay.io/biocontainers/multiqc:1.19--pyhdfd78af_0'
     publishDir params.outdir, mode: "copy"
 
     input:

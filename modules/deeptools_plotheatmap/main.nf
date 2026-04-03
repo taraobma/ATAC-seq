@@ -3,7 +3,7 @@
 process PLOTHEATMAP {
 
     label 'process_medium'
-    container 'docker://quay.io/biocontainers/deeptools:3.5.5--pyhdfd78af_0'
+    container 'quay.io/biocontainers/deeptools:3.5.5--pyhdfd78af_0'
     publishDir params.outdir, mode: 'copy'
 
     input:

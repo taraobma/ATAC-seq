@@ -2,7 +2,7 @@
 
 process CALLPEAKS {
     label 'process_high'
-    container 'ghcr.io/bf528/macs3:latest'
+    container 'joseespinosa/macs3:3.0.0b3'
     publishDir params.outdir, mode: 'copy'
 
     input:

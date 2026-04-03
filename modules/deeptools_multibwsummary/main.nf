@@ -3,7 +3,7 @@
 process MULTIBWSUMMARY {
     
     label 'process_high'
-    container 'ghcr.io/bf528/deeptools:latest'
+    container 'quay.io/biocontainers/deeptools:3.5.5--pyhdfd78af_0'
     publishDir params.outdir, mode: "copy"
 
     input: 
