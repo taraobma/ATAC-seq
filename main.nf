@@ -109,7 +109,7 @@ workflow {
         .groupTuple(by: 0)
         .map { group, reps, beds ->
             def sorted = [reps, beds].transpose().sort { a, b -> a[0] <=> b[0] }
-            tuple(group, sorted[0][1], sorted[1][1])
+            tuple(group, sorted[0][1], sorted[1][1])   // assumes exactly 2 reps
         }
 
     // intersect peaks between replicates for each group
@@ -126,21 +126,24 @@ workflow {
         .join(filtered_ch)
         .map { group, name, bed -> tuple(name, bed) }
         
-    // build DiffBind samplesheet dynamically - simpler approach
-    // Create channel from SAMTOOLS_MITO output with sample names
+    // Per-sample peaks for DiffBind (no consensus intersect)
     bam_ch = SAMTOOLS_MITO.out
         .map { name, bam, bai -> tuple(name, bam) }
-    
-    // Create channel with celltype and condition from metadata
+
+    // name, celltype, condition, replicate
     meta_celltype_ch = meta_ch.map { name, group, rep ->
         def parts = name.tokenize('_')
-        tuple(name, parts[0], parts[1], rep)  // name, celltype, condition, rep
-        }
-    
-    // Combine all needed channels for DiffBind samplesheet
+        tuple(name, parts[0], parts[1], rep)
+    }
+
+    // peaks_ch: (name, peak_bed) from MACS3
+    per_sample_peaks_ch = peaks_ch
+        .map { name, bed -> tuple(name, bed) }
+
+    // Build DiffBind samplesheet with all samples that have BAM + peaks + metadata
     diffbind_sheet_ch = bam_ch
-        .join(meta_celltype_ch)  // key = name
-        .join(sample_peaks_ch)   // key = name
+        .join(meta_celltype_ch)      // (name, bam, celltype, condition, rep)
+        .join(per_sample_peaks_ch)   // (name, bam, celltype, condition, rep, peaks)
         .map { name, bam, celltype, condition, rep, peaks ->
             tuple(name, bam, celltype, condition, rep, peaks)
         }

@@ -13,12 +13,20 @@ process PLOTHEATMAP {
     tuple val(group), path("${group}_heatmap.png"), emit: plot
 
     script:
-    """ 
+    """
     plotHeatmap \
         -m ${matrix} \
         -o ${group}_heatmap.png \
-        --plotTitle "${group} Signal at TSS" \
-        --colorMap Blues \
-        --whatToShow 'heatmap and colorbar'
+        --plotTitle "${group}" \
+        --colorMap RdBu \
+        --whatToShow 'plot, heatmap and colorbar' \
+        --legendLocation none \
+        --xAxisLabel "" \
+        --yAxisLabel "" \
+        --sortRegions descend \
+        --averageTypeSummaryPlot mean \
+        --heatmapHeight 10 \
+        --heatmapWidth 4 \
+        --dpi 300
     """
 }
