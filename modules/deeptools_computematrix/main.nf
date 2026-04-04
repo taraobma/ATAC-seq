@@ -6,23 +6,23 @@ process COMPUTEMATRIX {
     publishDir params.outdir, mode: 'copy'
 
     input:
-    tuple val(group), path(bigwigs)
-    path  genes
-    val   window
+    tuple val(celltype), path(bws), path(regions)
+    path(genes)
+    val(window)
 
     output:
-    tuple val(group), path("${group}_matrix.gz"), emit: matrix
+    tuple val(celltype), path("${celltype}_matrix.gz")
 
     script:
-    def bw_list = (bigwigs instanceof List ? bigwigs : [bigwigs]).collect { it.toString() }.join(' ')
+    def bw_list = bws.join(' ')
+    def region_list = regions.join(' ')
     """
-    computeMatrix reference-point \\
-        --referencePoint TSS \\
-        -b ${window} -a ${window} \\
-        -S ${bw_list} \\
-        -R ${genes} \\
-        --skipZeros \\
-        -o ${group}_matrix.gz \\
-        -p ${task.cpus}
+    computeMatrix reference-point \
+        --referencePoint TSS \
+        -b ${window} -a ${window} \
+        -S ${bw_list} \
+        -R ${region_list} \
+        --skipZeros \
+        -o ${celltype}_matrix.gz
     """
 }

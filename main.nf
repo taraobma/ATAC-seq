@@ -177,10 +177,29 @@ workflow {
     // group BigWig files by cell type for computeMatrix
     group_bw_ch = bw_with_type_ch.groupTuple(by: 0)
 
-    // compute matrix around TSS for each cell type using the UCSC genes as reference
-    matrix_ch = COMPUTEMATRIX(group_bw_ch, params.ucsc_genes, params.window)
-    
-    // plot heatmap of signal around TSS
+    // Build (celltype, gain_bed, loss_bed) channel from DiffBind outputs
+    gain_loss_ch = diffbind_out.gain
+        .flatten()
+        .map { bed -> tuple(bed.baseName.replace('_gain_peaks',''), bed) }
+        .join(
+            diffbind_out.loss
+                .flatten()
+                .map { bed -> tuple(bed.baseName.replace('_loss_peaks',''), bed) }
+        )
+        // gain_loss_ch: (celltype, gain_bed, loss_bed)
+
+    // Join BigWigs with gain/loss BEDs by cell type
+    heatmap_input_ch = group_bw_ch
+        .join(gain_loss_ch)
+        // heatmap_input_ch: (celltype, [bws], gain_bed, loss_bed)
+        .map { celltype, bws, gain_bed, loss_bed ->
+            tuple(celltype, bws, [gain_bed, loss_bed])
+        }
+
+    // Compute matrix with gain and loss as two separate regions
+    matrix_ch = COMPUTEMATRIX(heatmap_input_ch, params.ucsc_genes, params.window)
+
+    // Plot heatmap - one per cell type, two panels (Gain/Loss)
     PLOTHEATMAP(matrix_ch)
 
     // TSS enrichment - % of reads in ±1 kb windows around TSS

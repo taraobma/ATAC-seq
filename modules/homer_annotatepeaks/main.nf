@@ -12,15 +12,16 @@ process ANNOTATE {
     path(gtf)
 
     output:
-    tuple val(sample), path("annotated_peaks.txt"), emit: annotated_peaks
+    tuple val(sample), path("annotated_peaks_${sample}.txt"), emit: annotated_peaks
+
 
     script:
     """
-    annotatePeaks.pl ${filtered_peaks} $genome -gtf $gtf > annotated_peaks.txt
+    annotatePeaks.pl ${filtered_peaks} $genome -gtf $gtf > annotated_peaks_${sample}.txt
     """
 
     // stub:
     // """
-    // touch annotated_peaks.txt
+    // touch annotated_peaks_${sample}.txt
     // """
 }

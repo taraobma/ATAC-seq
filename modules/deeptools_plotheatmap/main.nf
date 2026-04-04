@@ -7,26 +7,18 @@ process PLOTHEATMAP {
     publishDir params.outdir, mode: 'copy'
 
     input:
-    tuple val(group), path(matrix)
+    tuple val(celltype), path(matrix)
 
     output:
-    tuple val(group), path("${group}_heatmap.png"), emit: plot
+    path("${celltype}_gain_loss_heatmap.png")
 
     script:
     """
     plotHeatmap \
         -m ${matrix} \
-        -o ${group}_heatmap.png \
-        --plotTitle "${group}" \
-        --colorMap RdBu \
-        --whatToShow 'plot, heatmap and colorbar' \
-        --legendLocation none \
-        --xAxisLabel "" \
-        --yAxisLabel "" \
-        --sortRegions descend \
-        --averageTypeSummaryPlot mean \
-        --heatmapHeight 10 \
-        --heatmapWidth 4 \
+        -out ${celltype}_gain_loss_heatmap.png \
+        --colorMap PuRd \
+        --regionsLabel Gain Loss \
         --dpi 300
     """
 }
