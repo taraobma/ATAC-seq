@@ -185,6 +185,7 @@ Reproduction was partially successful. The TSS heatmaps differ visually from the
 ## Tools Used
 
 * FastQC v0.12.1
+* MultiQC v1.19
 * Trimmomatic v0.39
 * Bowtie2
 * Samtools v1.17
@@ -193,10 +194,6 @@ Reproduction was partially successful. The TSS heatmaps differ visually from the
 * BEDtools v2.30
 * HOMER v4.11.1
 * DiffBind + edgeR (Bioconductor)
-* MultiQC v1.19
 * Enrichr (Reactome Pathways)
-* IGV
 * Nextflow
 * Singularity
-</content>
-</invoke>
