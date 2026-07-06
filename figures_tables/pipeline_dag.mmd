@@ -1,0 +1,126 @@
+flowchart TD
+
+  %% ---------- Inputs ----------
+  subgraph INPUTS[" "]
+    direction LR
+    samplesheet[samplesheet]
+    genome[genome]
+    blacklist[blacklist]
+    gtf[gtf]
+    ucsc[mm10_genes.bed]
+    tss1kb[tss_pm1kb.bed]
+  end
+
+  %% ---------- Processes ----------
+  DOWNLOAD(DOWNLOAD)
+  FASTQC(FASTQC)
+  TRIM(TRIM)
+  BUILD(BOWTIE2_BUILD)
+  ALIGN(BOWTIE2_ALIGN)
+  SORT(SAMTOOLS_VIEW_SORT)
+  IDX(SAMTOOLS_IDX)
+  MITO(SAMTOOLS_MITO)
+  FLAGSTAT(SAMTOOLS_FLAGSTAT)
+  BAMCOV(BAMCOVERAGE)
+  MBWS(MULTIBWSUMMARY)
+  CORR(PLOTCORRELATION)
+  MULTIQC(MULTIQC)
+  CALLPEAKS(CALLPEAKS)
+  INTERSECT(BEDTOOLS_INTERSECT)
+  REMOVE(BEDTOOLS_REMOVE)
+  DIFFBIND(DIFFBIND)
+  MOTIFS(FIND_MOTIFS_GENOME)
+  ANNOTATE(ANNOTATE)
+  CMATRIX(COMPUTEMATRIX)
+  HEATMAP(PLOTHEATMAP)
+  TSS(TSS_ENRICHMENT)
+  FRIP(FRIP)
+  MFRIP(MERGE_FRIP)
+  MITOFRAC(MITO_FRACTION)
+  MMITO(MERGE_MITO_FRACTION)
+
+  %% ---------- Channel junctions ----------
+  mqc(( ))
+  bwc(( ))
+
+  %% ---------- Edges ----------
+  samplesheet --> DOWNLOAD
+  DOWNLOAD --> FASTQC
+  DOWNLOAD --> TRIM
+  genome --> BUILD
+
+  TRIM -->|trimmed| ALIGN
+  BUILD -->|index| ALIGN
+  ALIGN --> SORT
+  SORT --> IDX
+  SORT -->|bam| MITOFRAC
+  IDX --> MITO
+  MITO --> FLAGSTAT
+
+  FASTQC -->|zip| mqc
+  TRIM -->|log| mqc
+  FLAGSTAT --> mqc
+  mqc --> MULTIQC
+
+  MITO --> BAMCOV
+  BAMCOV -->|bigwig| bwc
+  bwc --> MBWS
+  MBWS --> CORR
+
+  MITO --> CALLPEAKS
+  CALLPEAKS -->|peaks| INTERSECT
+  INTERSECT --> REMOVE
+  blacklist --> REMOVE
+
+  MITO -->|bam| DIFFBIND
+  CALLPEAKS -->|peaks| DIFFBIND
+  DIFFBIND -->|significant beds| MOTIFS
+  DIFFBIND -->|significant beds| ANNOTATE
+  genome --> MOTIFS
+  genome --> ANNOTATE
+  gtf --> ANNOTATE
+
+  DIFFBIND -->|gain/loss| CMATRIX
+  BAMCOV -->|bigwig| CMATRIX
+  ucsc --> CMATRIX
+  CMATRIX --> HEATMAP
+
+  MITO --> TSS
+  tss1kb --> TSS
+
+  MITO --> FRIP
+  REMOVE -->|filtered peaks| FRIP
+  FRIP --> MFRIP
+  MITOFRAC --> MMITO
+
+  %% ---------- Outputs ----------
+  subgraph OUTPUTS[" "]
+    direction LR
+    o_mqc[multiqc_report]
+    o_corr[correlation_plot]
+    o_motif[motif results]
+    o_annot[peak annotation]
+    o_heat[gain/loss heatmap]
+    o_tss[TSS enrichment]
+    o_frip[FRiP table]
+    o_mito[mito fraction table]
+    o_dar[significant DARs]
+  end
+
+  MULTIQC --> o_mqc
+  CORR --> o_corr
+  MOTIFS --> o_motif
+  ANNOTATE --> o_annot
+  HEATMAP --> o_heat
+  TSS --> o_tss
+  MFRIP --> o_frip
+  MMITO --> o_mito
+  DIFFBIND --> o_dar
+
+  %% ---------- Styling (Nextflow-DAG look) ----------
+  classDef io fill:#f4f4f8,stroke:#1a1a3a,stroke-width:1px,color:#1a1a3a;
+  classDef junction fill:#ffffff,stroke:#1a1a3a,stroke-width:2px,color:#1a1a3a;
+  class samplesheet,genome,blacklist,gtf,ucsc,tss1kb,o_mqc,o_corr,o_motif,o_annot,o_heat,o_tss,o_frip,o_mito,o_dar io;
+  class mqc,bwc junction;
+  style INPUTS fill:#f4f4f8,stroke:#c9c9d6;
+  style OUTPUTS fill:#f4f4f8,stroke:#c9c9d6;
