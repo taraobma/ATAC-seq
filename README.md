@@ -113,21 +113,16 @@ Genes near DARs enriched for distinct programs by cell type:
 ![cDC1 Reactome](./figures_tables/cdc1_reactome.png)
 ![cDC2 Reactome](./figures_tables/cdc2_reactome.png)
 
-### Genome Browser Validation
-
-IGV inspection of the _Maged1_ locus (chrX:94.533–94.544 Mb) in cDC1 shows a strong gain in read coverage in KO relative to WT, confirming increased chromatin accessibility at a specific gene consistent with the differential-accessibility analysis.
-
 ## Biological Interpretation
 
 * HDAC1 loss does not globally collapse or expand chromatin accessibility — promoter/TSS regions remain strongly and symmetrically accessible in all WT and KO conditions
 * Regulatory effects of the knockout are confined to specific loci and regulatory modules rather than a genome-wide shift, as reflected by focused gain/loss DARs
 * Shared ETS-family (PU.1, SpiB), IRF, and CTCF motif enrichment indicates that core DC lineage and genome-organizing factors drive the accessibility changes in both subsets
 * Divergent pathway signatures — Notch/interferon in cDC1 versus Rho/MAPK signal transduction in cDC2 — suggest HDAC1 modulates distinct downstream networks in each dendritic-cell subset
-* Locus-specific validation at _Maged1_ demonstrates a concrete KO-associated gain of accessibility
 
 ## Comparison to Original Study
 
-Reproduction was partially successful. The TSS heatmaps differ visually from the original Figure 6A/6B but support the same conclusion — promoters stay accessible across all DC conditions and the knockout does not globally disrupt TSS openness. The original "gain" and "loss" panels resolve distinct region subsets, whereas this analysis shows robust symmetric TSS enrichment in both WT and KO, implying knockout effects are confined to specific loci. The _Maged1_ genome-browser view was reproduced successfully; Figures 6C and 6E were not fully reproduced. Observed differences are attributable to methodological choices (peak-calling and reproducibility filtering, differential-testing thresholds) rather than biological discrepancies.
+Reproduction was partially successful. The TSS heatmaps differ visually from the original Figure 6A/6B but support the same conclusion — promoters stay accessible across all DC conditions and the knockout does not globally disrupt TSS openness. The original "gain" and "loss" panels resolve distinct region subsets, whereas this analysis shows robust symmetric TSS enrichment in both WT and KO, implying knockout effects are confined to specific loci. Figures 6C and 6E were not fully reproduced. Observed differences are attributable to methodological choices (peak-calling and reproducibility filtering, differential-testing thresholds) rather than biological discrepancies.
 
 ## Technical Highlights
 
@@ -136,7 +131,6 @@ Reproduction was partially successful. The TSS heatmaps differ visually from the
 * Automated reproducibility filtering via BEDtools intersection + blacklist removal
 * Differential accessibility with DiffBind + edgeR, split into gain/loss sets
 * Motif discovery and annotation via HOMER; pathway integration via Enrichr/Reactome
-* IGV validation of locus-specific accessibility changes
 
 ## Repository Structure
 
